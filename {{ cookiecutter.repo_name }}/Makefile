@@ -20,39 +20,36 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-## Install Python Dependencies
-requirements: test_environment
-	pip install -U pip setuptools wheel
-	pip install -r requirements.txt
+## Run flake8 and pydocstyle
+check:
+	flake8 --max-line-length 130 --max-complexity 10 src/
+	pydocstyle --ignore D200,D203,D204,D212,D213 src/
 
-## Make Dataset
-data: requirements
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py
+## run pylint
+pylint:
+	pylint --rcfile .pylintrc src/
 
-## Delete all compiled Python files
-clean:
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
+typecheck:
+	export MYPYPATH=./stubs/ mypy
+	mypy -m src/ --disallow-untyped-defs --silent-imports
 
-## Lint using flake8
-lint:
-	flake8 src
+## Run tests (without coverage)
+test:
+	pytest -v
 
-## Upload Data to S3
-sync_data_to_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync data/ s3://$(BUCKET)/data/
-else
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE)
-endif
+## Run tests (with coverage)
+coverage:
+	pytest --cov src/ --cov-report term-missing
 
-## Download Data from S3
-sync_data_from_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync s3://$(BUCKET)/data/ data/
-else
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
-endif
+## Run tests (with coverage) and output results to html
+htmlcov:
+	pytest --cov {{cookiecutter.application_name}} --cov-report html
+	rm -rf /tmp/htmlcov && mv htmlcov /tmp/
+	open /tmp/htmlconv/index.html
+
+## Define checks to run on PR
+pullrequestcheck: check pylint coverage
+
 
 ## Set up python interpreter environment
 create_environment:
@@ -60,8 +57,6 @@ ifeq (True,$(HAS_CONDA))
 		@echo ">>> Detected conda, creating conda environment."
 ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
 	conda create --name $(PROJECT_NAME) python=3
-else
-	conda create --name $(PROJECT_NAME) python=2.7
 endif
 		@echo ">>> New conda env created. Activate with:\nsource activate $(PROJECT_NAME)"
 else
@@ -75,12 +70,6 @@ endif
 ## Test python environment is setup correctly
 test_environment:
 	$(PYTHON_INTERPRETER) test_environment.py
-
-#################################################################################
-# PROJECT RULES                                                                 #
-#################################################################################
-
-
 
 #################################################################################
 # Self Documenting Commands                                                     #

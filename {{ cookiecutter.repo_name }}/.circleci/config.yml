@@ -1,0 +1,40 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/{{cookiecutter.repo_name}}
+    docker:
+      - image: circleci/python:3.6.5
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - restore_cache:
+          key: deps-\{\{ .Branch \}\}-\{\{ checksum "requirements-all-frozen.txt" \}\}
+      - run:
+          name: install dependencies
+          command: |
+            sudo python3.6 -m pip install -r requirements-all-frozen.txt
+            echo pwd
+      - save_cache:
+          key: deps-\{\{ .Branch \}\}-\{\{ checksum "requirements-all-frozen.txt" \}\}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.6/site-packages"
+      - run:
+          name: run code checks
+          command: |
+            make check
+            make pylint
+      - run:
+          name: run tests
+          command: |
+            make coverage
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+          destination: tr1
