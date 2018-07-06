@@ -5,10 +5,7 @@
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-BUCKET = {{ cookiecutter.s3_bucket }}
-PROFILE = {{ cookiecutter.aws_profile }}
 PROJECT_NAME = {{ cookiecutter.repo_name }}
-PYTHON_INTERPRETER = {{ cookiecutter.python_interpreter }}
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -43,7 +40,7 @@ coverage:
 
 ## Run tests (with coverage) and output results to html
 htmlcov:
-	pytest --cov {{cookiecutter.application_name}} --cov-report html
+	pytest --cov src/ --cov-report html
 	rm -rf /tmp/htmlcov && mv htmlcov /tmp/
 	open /tmp/htmlconv/index.html
 
@@ -55,7 +52,6 @@ pullrequestcheck: check pylint coverage
 create_environment:
 ifeq (True,$(HAS_CONDA))
 		@echo ">>> Detected conda, creating conda environment."
-ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
 	conda create --name $(PROJECT_NAME) python=3
 endif
 		@echo ">>> New conda env created. Activate with:\nsource activate $(PROJECT_NAME)"

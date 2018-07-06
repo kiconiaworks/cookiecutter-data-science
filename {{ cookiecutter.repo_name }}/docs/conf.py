@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # {{ cookiecutter.project_name }} documentation build configuration file, created by
 # sphinx-quickstart.
 #
@@ -230,8 +228,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', '{{ cookiecutter.repo_name }}', u'{{ cookiecutter.project_name }} Documentation',
-     u"{{ cookiecutter.author_name }}", '{{ cookiecutter.project_name }}',
-     '{{ cookiecutter.description }}', 'Miscellaneous'),
+     "{{ cookiecutter.author_name }}", '{{ cookiecutter.project_name }}',
+     'description', 'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
