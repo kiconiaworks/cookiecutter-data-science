@@ -19,16 +19,16 @@ endif
 
 ## Run flake8 and pydocstyle
 check:
-	flake8 --max-line-length 130 --max-complexity 10 src/
+	flake8 --max-line-length 150 --max-complexity 12 --ignore F403,F405,E252 src/
 	pydocstyle --ignore D200,D203,D204,D212,D213 src/
 
 ## run pylint
 pylint:
 	pylint --rcfile .pylintrc src/
 
-typecheck:
+mypy:
 	export MYPYPATH=./stubs/ mypy
-	mypy -m src/ --disallow-untyped-defs --silent-imports
+	mypy -m src/ --disallow-untyped-defs --ignore-missing-imports
 
 ## Run tests (without coverage)
 test:

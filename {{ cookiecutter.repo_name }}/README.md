@@ -12,35 +12,17 @@ This project uses these key technologies:
 ## Local Installation
 
 
-### Prepare venv
-
-1. From the commandline:
-	```
-	python -m venv .venv
-	```
-
 > If you have trouble creating the venv from the commandline, adding through pycharm is recommended
 
 ### Install dependencies
 
 ```
-# enter venv
-source .venv/bin/activate
-
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
+# prepare virtualenv and install dependencies
+pipenv install
+pipenv install --dev
 ```
 
-#### Updating and Freezing Dependencies
-
-For circleci testing the `requirements-all-frozen.txt` file is used to *cache* dependencies to speed up testing.
-
-When the `requirements.txt` file is updated and containing packages are installed, run the following command to update dependencies:
-```
-pip freeze | sort > requirements-all-frozen.txt
-```
-
-> Commit the file when changed!
+> When changes are made make sure to commit the 'Pipfile.lock' so the results can be reproduced
 
 
 ### Running code quality checks
@@ -61,7 +43,7 @@ make check
 make pylint
 
 # mypy
-make typecheck
+make mypy
 ```
 
 
